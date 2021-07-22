@@ -14,12 +14,6 @@ const Users = new Schema(
 				required: true,
 			},
 		],
-		timeSlots: [
-			{
-				type: Number,
-				required: true,
-			},
-		],
 	},
 	{ timestamps: true }
 );

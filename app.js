@@ -2,10 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const logger = require("morgan");
 const helmet = require("helmet");
-const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-
-dotenv.config();
+const config = require("./src/config/config");
 
 const app = express();
 
@@ -20,7 +18,7 @@ app.use(
 	)
 );
 
-const DB_URI = process.env.DB_URI;
+const DB_URI = config().db;
 mongoose
 	.connect(DB_URI, {
 		useNewUrlParser: true,
@@ -39,5 +37,5 @@ mongoose
 const userRoutes = require("./src/routes/User.routes");
 app.use("/api/v1/user", userRoutes);
 
-const PORT = process.env.PORT;
+const PORT = config().port;
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

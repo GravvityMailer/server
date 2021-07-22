@@ -1,14 +1,18 @@
 const fetch = require("node-fetch");
+const config = require("../config/config");
 
 const fetchFromAPI = async (queryParams, coinArray) => {
 	try {
+		const apiUrl = config().apiUrl;
+		const apiKey = config().apiKey;
+
 		let response = await fetch(
-			`https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?symbol=${queryParams}`,
+			`${apiUrl}/v1/cryptocurrency/quotes/latest?symbol=${queryParams}`,
 			{
 				method: "GET",
 				headers: {
 					"content-type": "application/json",
-					"X-CMC_PRO_API_KEY": "6e40f7d7-ff4c-4a1e-b27b-57eb247ed256",
+					"X-CMC_PRO_API_KEY": apiKey,
 				},
 			}
 		);
