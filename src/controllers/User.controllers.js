@@ -1,38 +1,49 @@
 const Users = require("../models/Users");
 const isEmailValid = require("../utils/EmailValidator");
 const fetchFromAPI = require("../utils/FetchFromAPI");
+const areCoinsValid = require("../utils/ValidateCoins");
 
-const inputValidator = (email, coins, timeSlots) => {
-	if (!coins || !timeSlots) return { error: "Invalid Syntax" };
+const inputValidator = (email, coins) => {
+	if (!coins || !email) return { error: "Invalid Syntax" };
 
 	const coinsLength = coins.length;
-	const timeSlotsLength = timeSlots.length;
 
-	if (!email || !isEmailValid(email)) return { error: "Invalid Email!" };
+	if (!isEmailValid(email)) return { error: "Invalid Email!" };
 
-	if (!coinsLength) return { error: "Select minimum one coin!" };
+	if (coinsLength < 1) return { error: "Select minimum one coin!" };
 
-	if (coinsLength > 4) return { error: "Cannot select more than 4 coins!" };
-
-	if (!timeSlotsLength) return { error: "Select minimum one timeslot!" };
+	if (coinsLength > 3) return { error: "Cannot select more than 3 coins!" };
 
 	return { message: "valid" };
 };
 
 const handleSubscribe = async (req, res, next) => {
-	const { email, coins, timeSlots } = req.body;
+	let { email, coins } = req.body;
 
-	let response = inputValidator(email, coins, timeSlots);
+	const response = inputValidator(email, coins);
 	if (response.error) return res.status(422).json(response);
+
+	const validateCoins = areCoinsValid(coins);
+	if (validateCoins === false)
+		return res.status(422).json({ error: "Invalid Request" });
+	else coins = validateCoins;
 
 	try {
 		const isUserExisting = await Users.findOne({ email });
-		if (isUserExisting)
-			return res.status(422).json({ error: "User already exists!" });
+		if (isUserExisting && isUserExisting.isSubscribed)
+			return res.status(422).json({ error: "User already subscribed!" });
+		else if (isUserExisting && !isUserExisting.isSubscribed) {
+			const user = await Users.findByIdAndUpdate(isUserExisting._id, {
+				isSubscribed: true,
+				coins: coins,
+			});
+
+			if (!user) return res.status(422).json({ error: "Invalid Request!" });
+			return res.status(200).json({ message: "User Subscribed!" });
+		}
 		const newUser = new Users({
 			email,
 			coins,
-			timeSlots,
 		});
 		try {
 			let savedUser = await newUser.save();
@@ -51,7 +62,9 @@ const handleUnsubscribe = async (req, res, next) => {
 	if (!id) return res.status(422).json({ error: "Userid not valid!" });
 
 	try {
-		const user = await Users.findByIdAndRemove(id);
+		const user = await Users.findByIdAndUpdate(id, {
+			isSubscribed: false,
+		});
 		if (!user) return res.status(422).json({ error: "Invalid Request!" });
 		return res.status(200).json({ message: "User Unsubscribed!" });
 	} catch (err) {
@@ -69,31 +82,72 @@ const fetchUserPrices = async (req, res, next) => {
 		if (!user) return res.status(422).json({ error: "Invalid Request!" });
 
 		let coins = user.coins;
-		// Converts ['BTC', 'ETH'] to BTC,ETH
-		let queryParams = coins.join();
-		let data = await fetchFromAPI(queryParams, coins);
+		let data = await fetchFromAPI(coins);
 		if (data.error) {
-			console.log(data.error);
+			if (data.statusCode === 500)
+				return res.status(500).json({ error: data.error });
+			return res.status(422).json({ error: data.error });
 		} else {
-			console.log(data.message);
-			res.json(data.message);
+			res.status(200).json({ message: data.message });
 		}
 	} catch (err) {
 		return res.status(500).json({ error: "Internal Server Error!" });
 	}
 };
 
-const handleUserUpdate = async (req, res, next) => {};
+const fetchUser = async (req, res, next) => {
+	const id = req.params.userId;
 
-// For lambda function to check which users to send emails to
-const fetchUserDetails = async (req, res, next) => {
-	let timeSlot = req.params.timeSlot;
-	timeSlot = parseInt(timeSlot);
+	if (!id) return res.status(422).json({ error: "Userid not valid!" });
 
 	try {
-		const users = await Users.find({ timeSlots: timeSlot }, "_id email");
+		const user = await Users.findById(id);
+		if (!user) return res.status(422).json({ error: "Invalid Request!" });
+		return res.status(200).json({ message: user });
+	} catch (err) {
+		return res.status(500).json({ error: "Internal Server Error!" });
+	}
+};
+
+const handleUserUpdate = async (req, res, next) => {
+	const id = req.params.userId;
+	let { email, coins } = req.body;
+
+	if (!id || !email || !coins)
+		return res.status(422).json({ error: "Invalid Request!" });
+
+	const response = inputValidator(email, coins);
+	if (response.error) return res.status(422).json(response);
+
+	const validateCoins = areCoinsValid(coins);
+	if (validateCoins === false)
+		return res.status(422).json({ error: "Invalid Request" });
+	else coins = validateCoins;
+
+	try {
+		const user = await Users.findOneAndUpdate(
+			{ _id: id, email: email },
+			{
+				coins,
+			}
+		);
+		if (!user) return res.status(422).json({ error: "Invalid Request!" });
+		return res.status(200).json({ message: "User Updated!" });
+	} catch (err) {
+		return res.status(500).json({ error: "Internal Server Error!" });
+	}
+};
+
+// For lambda function to check which users to send emails to
+const fetchUsers = async (req, res, next) => {
+	const authToken = req.headers.authorization;
+	if (!authToken || authToken !== process.env.LAMBDA_AUTH_TOKEN)
+		return res.status(422).json({ error: "Invalid Request!" });
+
+	try {
+		const users = await Users.find({ isSubscribed: true }, "_id email");
 		if (users.length === 0)
-			return res.status(404).json({ error: "No users with that timeslot" });
+			return res.status(404).json({ error: "No users found" });
 
 		return res.status(200).json({ message: users });
 	} catch (err) {
@@ -106,9 +160,6 @@ module.exports = {
 	handleSubscribe,
 	handleUnsubscribe,
 	fetchUserPrices,
-	fetchUserDetails,
+	fetchUsers,
+	fetchUser,
 };
-
-// TODO: Make config for test, prod db, api
-// TODO: Check if the tokens selected are available
-// TODO: Clean token names(Capital) and response objects(Nullify the non existing token objects)

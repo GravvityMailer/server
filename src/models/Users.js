@@ -14,6 +14,10 @@ const Users = new Schema(
 				required: true,
 			},
 		],
+		isSubscribed: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	{ timestamps: true }
 );
