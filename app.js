@@ -34,6 +34,10 @@ mongoose
 		process.exit();
 	});
 
+app.get("/", (req, res) => {
+	res.send("Hello World!");
+});
+
 const userRoutes = require("./src/routes/User.routes");
 app.use("/api/v1/user", userRoutes);
 
