@@ -88,7 +88,7 @@ const fetchUserPrices = async (req, res, next) => {
 				return res.status(500).json({ error: data.error });
 			return res.status(422).json({ error: data.error });
 		} else {
-			res.status(200).json({ message: data.message });
+			res.status(200).json({ items: data.message });
 		}
 	} catch (err) {
 		return res.status(500).json({ error: "Internal Server Error!" });

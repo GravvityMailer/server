@@ -32,6 +32,15 @@ const fetchFromAPI = async (coinsArray) => {
 			}
 		}
 
+		returnArr = returnArr.map((i, j) => {
+			let obj = {};
+			obj.id = i.id;
+			obj.name = i.name;
+			obj.slug = i.slug;
+			obj.price = i.quote.USD.price;
+			return obj;
+		});
+
 		return { message: returnArr, statusCode: 200 };
 	} catch (err) {
 		return { error: "Internal server error", statusCode: 500 };
