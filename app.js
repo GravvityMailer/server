@@ -42,4 +42,7 @@ const userRoutes = require("./src/routes/User.routes");
 app.use("/api/v1/user", userRoutes);
 
 const PORT = config().port;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+const env = config().env;
+app.listen(PORT, () =>
+	console.log(`Server is running in ${env} on port ${PORT}`)
+);
