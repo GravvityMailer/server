@@ -1,10 +1,8 @@
 const dotenv = require("dotenv");
 dotenv.config();
-const express = require("express");
-const app2 = express();
 
 const config = () => {
-	switch (app2.get("env")) {
+	switch (process.env.NODE_ENV) {
 		case "development":
 			return {
 				db: process.env.DEV_DB_URI,
