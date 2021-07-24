@@ -73,6 +73,8 @@ const handleUnsubscribe = async (req, res, next) => {
 };
 
 const fetchUserPrices = async (req, res, next) => {
+	const ampSenderHeader = req.headers["amp-email-sender"];
+
 	const id = req.params.userId;
 
 	if (!id) return res.status(422).json({ error: "Userid not valid!" });

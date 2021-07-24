@@ -1,25 +1,25 @@
 {
 	"name": "gravvity-server",
-  "version": "1.0.0",
-  "main": "app.js",
-  "scripts": {
-		"dev":"NODE_ENV=development nodemon app",
+	"version": "1.0.0",
+	"main": "app.js",
+	"scripts": {
+		"dev": "NODE_ENV=development nodemon app",
 		"start": "NODE_ENV=production node app"
 	},
-  "author": "",
-  "license": "ISC",
-  "description": "",
-
-  "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "helmet": "^4.6.0",
-    "mongoose": "^5.13.2",
-    "morgan": "^1.10.0",
-    "node-fetch": "^2.6.1"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.12"
-  }
+	"author": "",
+	"license": "ISC",
+	"description": "",
+	"dependencies": {
+		"@ampproject/toolbox-cors": "^2.8.0",
+		"cors": "^2.8.5",
+		"dotenv": "^10.0.0",
+		"express": "^4.17.1",
+		"helmet": "^4.6.0",
+		"mongoose": "^5.13.2",
+		"morgan": "^1.10.0",
+		"node-fetch": "^2.6.1"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.12"
+	}
 }

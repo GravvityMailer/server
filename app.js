@@ -3,11 +3,18 @@ const cors = require("cors");
 const logger = require("morgan");
 const helmet = require("helmet");
 const mongoose = require("mongoose");
+const ampCors = require("@ampproject/toolbox-cors");
 const config = require("./src/config/config");
 
 const app = express();
 
 //middlewares
+app.use(
+	ampCors({
+		verifyOrigin: false,
+		email: true,
+	})
+);
 app.use(cors());
 app.use(helmet());
 app.use(express.json());

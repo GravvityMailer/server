@@ -38,6 +38,8 @@ const fetchFromAPI = async (coinsArray) => {
 			obj.name = i.name;
 			obj.slug = i.slug;
 			obj.price = i.quote.USD.price;
+			obj.symbol = i.symbol;
+
 			return obj;
 		});
 
