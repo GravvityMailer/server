@@ -1,3 +1,6 @@
+const fs = require("fs");
+const http = require("http");
+const https = require("https");
 const express = require("express");
 const cors = require("cors");
 const logger = require("morgan");
@@ -6,9 +9,13 @@ const mongoose = require("mongoose");
 const ampCors = require("@ampproject/toolbox-cors");
 const config = require("./src/config/config");
 
+const privateKey = fs.readFileSync("ssl/gravvity.in.key", "utf8");
+const certificate = fs.readFileSync("ssl/gravvity.in.crt", "utf8");
+const credentials = { key: privateKey, cert: certificate };
+
 const app = express();
 
-//middlewares
+// middlewares;
 app.use(
 	ampCors({
 		verifyOrigin: false,
@@ -48,8 +55,17 @@ app.get("/", (req, res) => {
 const userRoutes = require("./src/routes/User.routes");
 app.use("/api/v1/user", userRoutes);
 
-const PORT = config().port;
+const httpServer = http.createServer(app);
+const httpsServer = https.createServer(credentials, app);
+
+const portHTTP = 8080;
+const portHTTPS = 8443;
 const env = config().env;
-app.listen(PORT, () =>
-	console.log(`Server is running in ${env} on port ${PORT}`)
+
+httpServer.listen(portHTTP, () =>
+	console.log(`Server is running in ${env} on port ${portHTTP}`)
+);
+
+httpsServer.listen(portHTTPS, () =>
+	console.log(`Server is running in ${env} on port ${portHTTPS}`)
 );

@@ -73,7 +73,8 @@ const handleUnsubscribe = async (req, res, next) => {
 };
 
 const fetchUserPrices = async (req, res, next) => {
-	const ampSenderHeader = req.headers["amp-email-sender"];
+	const ampSenderHeaders = req.headers;
+	const ampSender = ampSenderHeaders["amp-email-sender"];
 
 	const id = req.params.userId;
 
@@ -90,6 +91,7 @@ const fetchUserPrices = async (req, res, next) => {
 				return res.status(500).json({ error: data.error });
 			return res.status(422).json({ error: data.error });
 		} else {
+			res.set("AMP-Email-Allow-Sender", ampSender);
 			res.status(200).json({ items: data.message });
 		}
 	} catch (err) {
