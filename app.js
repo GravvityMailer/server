@@ -55,16 +55,14 @@ app.get("/", (req, res) => {
 const userRoutes = require("./src/routes/User.routes");
 app.use("/api/v1/user", userRoutes);
 
-const httpServer = http.createServer(app);
-const httpsServer = https.createServer(credentials, app);
+const environmentType = config().env;
+const server =
+	environmentType === "production"
+		? https.createServer(credentials, app)
+		: http.createServer(app);
 
 const port = config().port;
-const environmentType = config().env;
 
-environmentType === "production"
-	? httpsServer.listen(port, () =>
-			console.log(`Server is running in ${environmentType} on port ${port}`)
-	  )
-	: httpServer.listen(port, () =>
-			console.log(`Server is running in ${environmentType} on port ${port}`)
-	  );
+server.listen(port, () =>
+	console.log(`Server is running in ${environmentType} on port ${port}`)
+);
