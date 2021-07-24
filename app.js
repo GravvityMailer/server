@@ -58,14 +58,13 @@ app.use("/api/v1/user", userRoutes);
 const httpServer = http.createServer(app);
 const httpsServer = https.createServer(credentials, app);
 
-const portHTTP = 8080;
-const portHTTPS = 8443;
-const env = config().env;
+const port = config().port;
+const environmentType = config().env;
 
-httpServer.listen(portHTTP, () =>
-	console.log(`Server is running in ${env} on port ${portHTTP}`)
-);
-
-httpsServer.listen(portHTTPS, () =>
-	console.log(`Server is running in ${env} on port ${portHTTPS}`)
-);
+environmentType === "production"
+	? httpsServer.listen(port, () =>
+			console.log(`Server is running in ${environmentType} on port ${port}`)
+	  )
+	: httpServer.listen(port, () =>
+			console.log(`Server is running in ${environmentType} on port ${port}`)
+	  );

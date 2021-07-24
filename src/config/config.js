@@ -9,6 +9,7 @@ const config = () => {
 				apiUrl: "https://sandbox-api.coinmarketcap.com",
 				apiKey: process.env.DEV_API_KEY,
 				env: "development",
+				port: 8080,
 			};
 		case "production":
 			return {
@@ -16,6 +17,7 @@ const config = () => {
 				apiUrl: "https://pro-api.coinmarketcap.com",
 				apiKey: process.env.PROD_API_KEY,
 				env: "production",
+				port: 8443,
 			};
 		default:
 			return {
@@ -23,6 +25,7 @@ const config = () => {
 				apiUrl: "https://sandbox-api.coinmarketcap.com",
 				apiKey: process.env.DEV_API_KEY,
 				env: "development",
+				port: 8080,
 			};
 	}
 };
