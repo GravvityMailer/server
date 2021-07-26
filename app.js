@@ -40,7 +40,9 @@ app.get("/", (req, res) => {
 });
 
 const userRoutes = require("./src/routes/User.routes");
+const coinRoutes = require("./src/routes/Coin.routes");
 app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/coin", coinRoutes);
 
 // Port configuration
 const environmentType = config().env;

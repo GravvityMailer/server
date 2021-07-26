@@ -10,6 +10,8 @@ const config = () => {
 				apiKey: process.env.DEV_API_KEY,
 				env: "development",
 				port: 8080,
+				coinIconsStorageUrl:
+					"https://crypto-coins-icons.s3.ap-south-1.amazonaws.com",
 			};
 		case "production":
 			return {
@@ -18,6 +20,8 @@ const config = () => {
 				apiKey: process.env.PROD_API_KEY,
 				env: "production",
 				port: 8443,
+				coinIconsStorageUrl:
+					"https://crypto-coins-icons.s3.ap-south-1.amazonaws.com",
 			};
 		default:
 			return {
@@ -26,6 +30,8 @@ const config = () => {
 				apiKey: process.env.DEV_API_KEY,
 				env: "development",
 				port: 8080,
+				coinIconsStorageUrl:
+					"https://crypto-coins-icons.s3.ap-south-1.amazonaws.com",
 			};
 	}
 };
