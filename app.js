@@ -54,7 +54,5 @@ const server =
 const port = config().port;
 
 server.listen(port, () =>
-	console.log(
-		`Server is running in ${environmentType} on port ${port} and ${process.env.ADITYA}`
-	)
+	console.log(`Server is running in ${environmentType} on port ${port}`)
 );
