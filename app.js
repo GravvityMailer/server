@@ -36,7 +36,7 @@ require("./src/config/dbConfig")();
 
 // Routes
 app.get("/", (req, res) => {
-	res.send("Hello World!!!!!");
+	res.send("Hello World!");
 });
 
 const userRoutes = require("./src/routes/User.routes");
