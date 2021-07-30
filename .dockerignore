@@ -1,11 +1,11 @@
 node_modules
 npm-debug.log
 
-ssl
-.env
+# ssl
+# .env
 
-Dockerfile
+# Dockerfile
 
-.git
-.dockerignore
-.gitignore
+# .git
+# .dockerignore
+# .gitignore
